@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using DG.Tweening;
 
 namespace KanjiYomi
 {
@@ -9,6 +10,9 @@ namespace KanjiYomi
     {
         [SerializeField]
         TextMeshProUGUI playerLifeText;
+
+        public float effectDuration = 0.5f;
+        public float scaleMultiplier = 1.2f;
 
         private void Awake()
         {
@@ -22,7 +26,17 @@ namespace KanjiYomi
 
         void ChangePlayetLifeText(int playerLife)
         {
-            playerLifeText.text = playerLife.ToString();
+            //playerLifeText.text = playerLife.ToString();
+
+            playerLifeText.rectTransform.DOScale(Vector3.one * scaleMultiplier, effectDuration / 2f)
+            .SetEase(Ease.OutBack) // テキストのスケールが大きくなります
+            .OnComplete(() =>
+            {
+                // スケールが大きくなった後、テキストを変更して元のサイズに戻します
+                playerLifeText.text = playerLife.ToString();
+                playerLifeText.rectTransform.DOScale(Vector3.one, effectDuration / 2f)
+                    .SetEase(Ease.InBack); // 元のスケールに戻ります
+            });
         }
     }
 }

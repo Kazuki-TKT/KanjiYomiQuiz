@@ -15,7 +15,7 @@ namespace KanjiYomi
         public enum Judge
         {
             Correct,//正解
-            Wrong,//不正解
+            Miss,//不正解
             Initial//初期
         }
 
@@ -43,6 +43,7 @@ namespace KanjiYomi
 
         //敵モンスターを制御する
         [SerializeField] EnemyController enemyController;
+        [SerializeField] LevelTextGUI levelTextGUI;
 
         //キャンセルトークン
         CancellationTokenSource cts;
@@ -117,11 +118,25 @@ namespace KanjiYomi
                     &&GameManager.Instance.gameState==GameState.Playing
                     &&correctAnswerCount<10)
                 {
-                    //問題を取得
-                    QuestionManager.Instance.GetQuestionData(correctAnswerCount);
                     //初期化
                     playerAnswer = false;
                     SetGameState(Judge.Initial);
+
+                    //----待機処理----//
+                    switch (correctAnswerCount)
+                    {
+                        case 0:
+                        case 3:
+                        case 6:
+                        case 9:
+                            levelTextGUI.OnDisplayLevelText(correctAnswerCount);
+                            await UniTask.Delay(TimeSpan.FromSeconds(levelTextGUI.duration + 0.5f), cancellationToken: token);
+                            break;
+                    }
+
+                    //問題を取得
+                    QuestionManager.Instance.GetQuestionData(correctAnswerCount);
+                   
                     //敵を召喚し、攻撃を行う
                     enemyController.MonsterSpawnAndAttackAnimation(QuestionManager.Instance.CurrentData.questionDifficulty,token);
 
@@ -155,12 +170,17 @@ namespace KanjiYomi
                     else
                     {
                         Debug.Log($"不正解:{QuestionManager.Instance.CurrentData.Correct}");
-                        SetGameState(Judge.Wrong);//判定の変更
+                        SetGameState(Judge.Miss);//判定の変更
                         enemyController.MonsterEscape();//敵逃げる
                         countDownAnimation.SetTrigger("stop");//カウントダウンアニメーションを止める
-                        if (PlayerController.Instance.PlayerLife > 0) PlayerController.Instance.DecreasePlayerLife();//プレイヤーのライフを削る
+
+                        //----待機処理----//
+                        bool result = await PlayerController.Instance.answerMissAnimation.MissAnimation(token);
+                        await UniTask.WaitUntil(() => result);
+
                         //----待機処理----//
                         await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);// キーボードのスペースが押されるまで
+                        if (PlayerController.Instance.PlayerLife > 0) PlayerController.Instance.DecreasePlayerLife();//プレイヤーのライフを削る
                     }
                     //----待機処理----//
                     await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: token);

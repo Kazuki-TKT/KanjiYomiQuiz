@@ -44,13 +44,16 @@ namespace KanjiYomi
                     HandlePlaying();
                     break;
                 case GameState.GameOver:
+                    HandleGameOver();
                     break;
                 case GameState.GameClear:
+                    HandleGameClear();
                     break;
             }
 
             OnGameStateChanged?.Invoke(newState);
         }
+
 
         private void HandlePlaying()
         {
@@ -58,6 +61,16 @@ namespace KanjiYomi
 
         private void HandleTitle()
         {
+        }
+
+        private void HandleGameClear()
+        {
+
+        }
+
+        private void HandleGameOver()
+        {
+
         }
     }
 

@@ -35,30 +35,29 @@ namespace KanjiYomi
         [SerializeField]
         CanvasGroup damageCanvasGroup;
 
-        CancellationTokenSource cts;
+        //CancellationTokenSource cts;
         void Start()
         {
             impulseSource.m_ImpulseDefinition.m_TimeEnvelope.m_SustainTime = animationTime;
         }
 
-        public void PlayMissAnimation()
+        public void PlayMissAnimation(CancellationToken token)
         {
-            cts = new CancellationTokenSource();
-            CancellationToken token = cts.Token;
             MissAnimation(token).Forget();
         }
         
         public void StopMissAnimation()
         {
-            cts?.Cancel();
+            //cts?.Cancel();
         }
         private void NotifyMissAnimationComplete()
         {
             // イベントが登録されているかを確認してから通知
             OnMissAnimationComplete?.Invoke();
         }
-        async UniTask  MissAnimation(CancellationToken token)
+        public async UniTask<bool>  MissAnimation(CancellationToken token)
         {
+            bool end;
             foreach(ParticleSystem particleSystem in smokeParticle)
             {
                 particleSystem.Play();
@@ -72,6 +71,9 @@ namespace KanjiYomi
                 particleSystem.Stop();
             }
             NotifyMissAnimationComplete();
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: token);
+            end = true;
+            return end;
         }
         
     }

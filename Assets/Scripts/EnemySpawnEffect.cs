@@ -19,11 +19,6 @@ namespace KanjiYomi
         void Start()
         {
             shaderProperty = Shader.PropertyToID("_cutoff");
-            //_renderer = GetComponent<Renderer>();
-
-            //ringParticle = GetComponentInChildren<ParticleSystem>();
-            //var main = ringParticle.main;
-            //main.duration = spawnEffectTime;
         }
         private void OnEnable()
         {
@@ -34,7 +29,7 @@ namespace KanjiYomi
         {
             ringParticle.Play();
             //_renderer.material.DOFloat(1, shaderProperty, spawnEffectTime).SetEase(Ease.Linear);
-            DOTween.To(() => 0f, value => _renderer.material.SetFloat(shaderProperty, value), 1f, spawnEffectTime).SetEase(Ease.Linear);
+            DOTween.To(() => 0f, value => _renderer.material.SetFloat(shaderProperty, value), 1f, spawnEffectTime+0.5f).SetEase(Ease.Linear);
 
         }
 

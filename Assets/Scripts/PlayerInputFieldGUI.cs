@@ -47,7 +47,7 @@ namespace KanjiYomi
             switch (newJudge)
             {
                 case QuestionGameController.Judge.Correct:
-                case QuestionGameController.Judge.Wrong:
+                case QuestionGameController.Judge.Miss:
                     EventSystem.current.SetSelectedGameObject(null);
                     playerInputFieldObject.SetActive(false);
                     break;

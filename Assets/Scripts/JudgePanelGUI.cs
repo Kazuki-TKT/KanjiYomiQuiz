@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+
 namespace KanjiYomi
 {
     public class JudgePanelGUI : MonoBehaviour
@@ -11,7 +10,9 @@ namespace KanjiYomi
         [SerializeField]
         QuestionGameController questionGameController;
         [SerializeField]
-        GameObject correctPanelObjects,wrongPanelObjects, inputFieldObject;
+        PlayerMissAnswerAnimation playerMissAnswerAnimation;
+        [SerializeField]
+        GameObject correctPanelObjects,missPanelObjects, inputFieldObject;
         [SerializeField]
         TextMeshProUGUI[] questionText, correctText, descriptionText;
 
@@ -19,11 +20,13 @@ namespace KanjiYomi
         {
             // QuestionGameController‚ÌƒCƒxƒ“ƒg‚ðw“Ç
             questionGameController.OnJudgeStateChanged += HandleJudgeStateChanged;
+            playerMissAnswerAnimation.OnMissAnimationComplete+=()=> missPanelObjects.SetActive(true);
 
         }
         private void OnDestroy()
         {
             questionGameController.OnJudgeStateChanged -= HandleJudgeStateChanged;
+            playerMissAnswerAnimation.OnMissAnimationComplete -= () => missPanelObjects.SetActive(true);
         }
 
         private void HandleJudgeStateChanged(QuestionGameController.Judge newJudge)
@@ -34,17 +37,23 @@ namespace KanjiYomi
             {
                 case QuestionGameController.Judge.Correct:
                     SetQuestionDataText(QuestionManager.Instance.CurrentData);
-                    correctPanelObjects.SetActive(true);
+                    StartCoroutine(WaitDisplayPanel(correctPanelObjects,1));
                     break;
-                case QuestionGameController.Judge.Wrong:
+                case QuestionGameController.Judge.Miss:
                     SetQuestionDataText(QuestionManager.Instance.CurrentData);
-                    wrongPanelObjects.SetActive(true);
+                    StartCoroutine(WaitDisplayPanel(missPanelObjects, 2));
                     break;
                 case QuestionGameController.Judge.Initial:
                     correctPanelObjects.SetActive(false);
-                    wrongPanelObjects.SetActive(false);
+                    missPanelObjects.SetActive(false);
                     break;
             }
+        }
+
+        IEnumerator WaitDisplayPanel(GameObject gameObject,float duration)
+        {
+            yield return new WaitForSeconds(duration);
+            gameObject.SetActive(true);
         }
 
         /// <summary>

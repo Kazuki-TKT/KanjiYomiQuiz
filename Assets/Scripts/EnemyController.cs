@@ -4,7 +4,8 @@ using UnityEngine;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using System;
-using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEngine.Rendering.PostProcessing;
+using DG.Tweening;
 
 namespace KanjiYomi
 {
@@ -17,16 +18,26 @@ namespace KanjiYomi
         MonsterData currentMonsterData;
         public MonsterData CurrentMonsterData { get => currentMonsterData; }
 
+        //画面効果
+        public PostProcessVolume postProcessVolume;
+        ChromaticAberration chromaticAberrationLayer;
+
+        //爆発エフェクト
+        public ParticleSystem particleExprosion;
+
+        //Animatorのproperty
         const string ATTACK = "Attack";
         const string DIE = "Die";
+
+        public AudioClip summonsClip, explosionClip;
         private void Start()
         {
-
+            postProcessVolume.profile.TryGetSettings(out chromaticAberrationLayer);
         }
         public void MonsterSpawnAndAttackAnimation(Difficulty difficulty, CancellationToken token)
         {
             currentMonsterData = GetMonster(difficulty);
-            SpawnAndAttackAnimation(currentMonsterData.enemySpawn.spawnEffectTime, token).Forget();
+            SpawnAndAttackAnimation(currentMonsterData.enemySpawn.spawnEffectTime+0.5f, token).Forget();
         }
         public void MonsterDie(CancellationToken token)
         {
@@ -42,9 +53,18 @@ namespace KanjiYomi
         {
             try
             {
-                currentMonsterData.monsterObject.SetActive(true);
-                await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);
-                currentMonsterData.monsterObject.GetComponent<Animator>().SetTrigger(ATTACK);
+                currentMonsterData.monsterObject.SetActive(true);//敵を表示
+                AuidoManager.Instance.PlaySound_SE(summonsClip);
+                await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);//表示アニメーション時間分待機
+                currentMonsterData.monsterObject.GetComponent<Animator>().SetTrigger(ATTACK);//アタック攻撃
+                foreach(AudioClip clip in currentMonsterData.screamClip)//SEを鳴らす
+                {
+                    AuidoManager.Instance.PlaySound_SE(clip);
+                }
+                DOTween.To(() => chromaticAberrationLayer.intensity.value, x => chromaticAberrationLayer.intensity.value = x, 1, 0.5f).SetEase(Ease.InSine);//ポストプロセスを使用して迫力を出す
+                await UniTask.Delay(TimeSpan.FromSeconds(1f), cancellationToken: token);
+                DOTween.To(() => chromaticAberrationLayer.intensity.value, x => chromaticAberrationLayer.intensity.value = x, 0, 0.5f)
+            .SetEase(Ease.Linear);
             }
             catch (OperationCanceledException)
             {
@@ -60,7 +80,9 @@ namespace KanjiYomi
         {
             try
             {
-                currentMonsterData.monsterObject.GetComponent<Animator>().SetTrigger(DIE);
+                AuidoManager.Instance.PlaySound_SE(explosionClip);
+                particleExprosion.Play();
+                currentMonsterData.monsterObject.GetComponent<Animator>().SetTrigger(DIE);//倒れる
                 await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);
                 currentMonsterData.enemySpawn.DespawnEffect(currentMonsterData?.monsterObject);
             }
@@ -74,18 +96,21 @@ namespace KanjiYomi
             }
         }
 
+        //MonstaerDataから選んだモンスターを返すメソッド
         MonsterData GetMonster(Difficulty difficulty)
         {
             var monsterData = monsterDatas.Find(monsterData => monsterData.monsterDifficulty == difficulty);
             return monsterData;
         }
-    }
 
-    [System.Serializable]
+
+        [System.Serializable]
     public class MonsterData
     {
         public Difficulty monsterDifficulty;
         public GameObject monsterObject;
         public EnemySpawnEffect enemySpawn;
+            public AudioClip[] screamClip;
+    }
     }
 }

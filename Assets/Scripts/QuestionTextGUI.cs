@@ -28,6 +28,10 @@ namespace KanjiYomi
         Vector3 defaltScale,targetScale;
 
         private Tweener scaleUpTween;
+
+        //パーティクル(Hit)
+        [SerializeField]
+        ParticleSystem hitParticle;
         private void Awake()
         {
             // QuestionGameControllerのイベントを購読
@@ -54,7 +58,10 @@ namespace KanjiYomi
             switch (newJudge)
             {
                 case QuestionGameController.Judge.Correct:
-                case QuestionGameController.Judge.Wrong:
+                    hitParticle.Play();
+                    CancelFadeIn();
+                    break;
+                case QuestionGameController.Judge.Miss:
                     CancelFadeIn();
                     break;
             }

@@ -14,6 +14,8 @@ namespace KanjiYomi
         //プレイヤーがもつライフの最大値
         const int MAX_PLAYER_LIFE = 3;
 
+        public PlayerMissAnswerAnimation answerMissAnimation;
+
         /// <summary>
         /// プレイヤーのライフ
         /// </summary>
