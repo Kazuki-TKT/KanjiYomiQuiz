@@ -52,12 +52,31 @@ namespace KanjiYomi
                     playerInputFieldObject.SetActive(false);
                     break;
                 case QuestionGameController.Judge.Initial:
-                    playerInputFieldObject.SetActive(true);
-                    playerInputField.ActivateInputField();
-                    playerInputField.text = "";
+                    if ((questionGameController.CorrectAnswerCount == 0 && !questionGameController.level1Flag) ||
+                        (questionGameController.CorrectAnswerCount == 3 && !questionGameController.level2Flag) ||
+                        (questionGameController.CorrectAnswerCount == 6 && !questionGameController.level3Flag) ||
+                       (questionGameController.CorrectAnswerCount == 9 && !questionGameController.level4Flag))
+                    {
+                        OffInputField();
+                    }
+                    else
+                    {
+                        OnInputField();
+                    }
                     break;
             }
         }
 
+        public void OffInputField()
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            playerInputFieldObject.SetActive(false);
+        }
+        public void OnInputField()
+        {
+            playerInputFieldObject.SetActive(true);
+            playerInputField.ActivateInputField();
+            playerInputField.text = "";
+        }
     }
 }

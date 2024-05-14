@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
@@ -11,6 +9,8 @@ namespace KanjiYomi
         TextMeshProUGUI countDownText;
         [SerializeField]
         CanvasGroup flashRedCanvas;
+
+        public AudioClip alertClip;
         // Start is called before the first frame update
         void Start()
         {
@@ -29,6 +29,7 @@ namespace KanjiYomi
         public void Flash()
         {
             flashRedCanvas.DOFade(1, 0.1f).OnComplete(() => flashRedCanvas.DOFade(0, 0.4f));
+            AuidoManager.Instance.PlaySound_SE(alertClip);
         }
     }
 }

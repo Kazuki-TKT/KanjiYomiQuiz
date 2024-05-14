@@ -28,13 +28,13 @@ namespace KanjiYomi
         }
         void Start()
         {
-            UpdateGameState(GameState.Playing);
+            UpdateGameState(GameState.Title);
         }
 
         public void UpdateGameState(GameState newState)
         {
-            gameState = newState;
-
+            //gameState = newState;
+            if (gameState == newState)return;
             switch (newState)
             {
                 case GameState.Title:
@@ -57,20 +57,26 @@ namespace KanjiYomi
 
         private void HandlePlaying()
         {
+            Debug.Log($"<color=red>{gameState}</color>");
+            AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.Playng);
         }
 
         private void HandleTitle()
         {
+            Debug.Log($"<color=red>{gameState}</color>");
+            AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.Title);
         }
 
         private void HandleGameClear()
         {
-
+            Debug.Log($"<color=red>{gameState}</color>");
+            AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.GameClear);
         }
 
         private void HandleGameOver()
         {
-
+            Debug.Log($"<color=red>{gameState}</color>");
+            AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.GameOver);
         }
     }
 

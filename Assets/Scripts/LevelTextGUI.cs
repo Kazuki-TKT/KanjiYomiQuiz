@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
@@ -9,10 +8,9 @@ namespace KanjiYomi
 {
     public class LevelTextGUI : MonoBehaviour
     {
-        CanvasGroup canvasGroup;
         public TextMeshProUGUI level1Text, level2Text, level3Text, level4Text;
         public float duration;
-
+        public AudioClip onTextClip;
         public void OnDisplayLevelText(int count)
         {
             switch (count)
@@ -32,8 +30,9 @@ namespace KanjiYomi
                 case 9:
                     Initialize(level4Text);
                     TextAnimation(level4Text);
-                    break;;
+                    break;
             }
+            AuidoManager.Instance.PlaySound_SE(onTextClip);
         }
 
         void TextAnimation(TextMeshProUGUI tmpro)

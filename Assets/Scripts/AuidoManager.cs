@@ -20,6 +20,8 @@ namespace KanjiYomi
 
         [SerializeField]
         List<BGMData> bgmDatas;
+
+        public AudioClip buttonSE;
         private void Awake()
         {
             if (Instance == null)

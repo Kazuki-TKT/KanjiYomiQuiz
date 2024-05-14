@@ -23,7 +23,8 @@ namespace KanjiYomi
         ChromaticAberration chromaticAberrationLayer;
 
         //爆発エフェクト
-        public ParticleSystem particleExprosion;
+        public ParticleSystem particleExprosion,shockWave;
+        public ParticleSystem[] particleTinyExprosion;
 
         //Animatorのproperty
         const string ATTACK = "Attack";
@@ -57,7 +58,8 @@ namespace KanjiYomi
                 AuidoManager.Instance.PlaySound_SE(summonsClip);
                 await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);//表示アニメーション時間分待機
                 currentMonsterData.monsterObject.GetComponent<Animator>().SetTrigger(ATTACK);//アタック攻撃
-                foreach(AudioClip clip in currentMonsterData.screamClip)//SEを鳴らす
+                shockWave.Play();
+                foreach (AudioClip clip in currentMonsterData.screamClip)//SEを鳴らす
                 {
                     AuidoManager.Instance.PlaySound_SE(clip);
                 }
@@ -80,11 +82,18 @@ namespace KanjiYomi
         {
             try
             {
-                AuidoManager.Instance.PlaySound_SE(explosionClip);
-                particleExprosion.Play();
+                PlayerController.Instance.PlayerAttack(1);//プレイヤーの攻撃
+                foreach(ParticleSystem particle in particleTinyExprosion)
+                {
+                    particle.Play();
+                }
+
+                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+                AuidoManager.Instance.PlaySound_SE(explosionClip);//爆発音
+                particleExprosion.Play();//爆発
                 currentMonsterData.monsterObject.GetComponent<Animator>().SetTrigger(DIE);//倒れる
                 await UniTask.Delay(TimeSpan.FromSeconds(time), cancellationToken: token);
-                currentMonsterData.enemySpawn.DespawnEffect(currentMonsterData?.monsterObject);
+                currentMonsterData.enemySpawn.DespawnEffect(currentMonsterData?.monsterObject);//敵を非表示
             }
             catch (OperationCanceledException)
             {

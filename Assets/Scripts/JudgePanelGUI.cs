@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -16,19 +17,30 @@ namespace KanjiYomi
         [SerializeField]
         TextMeshProUGUI[] questionText, correctText, descriptionText;
 
+        public AudioClip correctClip, missClip;
         private void Awake()
         {
             // QuestionGameController‚ÌƒCƒxƒ“ƒg‚ðw“Ç
             questionGameController.OnJudgeStateChanged += HandleJudgeStateChanged;
+            GameManager.OnGameStateChanged += HandleGameStateChanged;
             playerMissAnswerAnimation.OnMissAnimationComplete+=()=> missPanelObjects.SetActive(true);
 
         }
         private void OnDestroy()
         {
             questionGameController.OnJudgeStateChanged -= HandleJudgeStateChanged;
+            GameManager.OnGameStateChanged -= HandleGameStateChanged;
             playerMissAnswerAnimation.OnMissAnimationComplete -= () => missPanelObjects.SetActive(true);
         }
-
+        private void HandleGameStateChanged(GameState state)
+        {
+            if (state == GameState.GameOver||
+                state == GameState.GameClear)
+            {
+                correctPanelObjects.SetActive(false);
+                missPanelObjects.SetActive(false);
+            }
+        }
         private void HandleJudgeStateChanged(QuestionGameController.Judge newJudge)
         {
             //Debug.Log(newJudge);
@@ -37,11 +49,11 @@ namespace KanjiYomi
             {
                 case QuestionGameController.Judge.Correct:
                     SetQuestionDataText(QuestionManager.Instance.CurrentData);
-                    StartCoroutine(WaitDisplayPanel(correctPanelObjects,1));
+                    StartCoroutine(WaitDisplayPanel(correctPanelObjects,1, newJudge));
                     break;
                 case QuestionGameController.Judge.Miss:
                     SetQuestionDataText(QuestionManager.Instance.CurrentData);
-                    StartCoroutine(WaitDisplayPanel(missPanelObjects, 2));
+                    StartCoroutine(WaitDisplayPanel(missPanelObjects, 2, newJudge));
                     break;
                 case QuestionGameController.Judge.Initial:
                     correctPanelObjects.SetActive(false);
@@ -50,10 +62,18 @@ namespace KanjiYomi
             }
         }
 
-        IEnumerator WaitDisplayPanel(GameObject gameObject,float duration)
+        IEnumerator WaitDisplayPanel(GameObject gameObject,float duration, QuestionGameController.Judge newJudge)
         {
             yield return new WaitForSeconds(duration);
             gameObject.SetActive(true);
+            if (newJudge == QuestionGameController.Judge.Miss)
+            {
+               AuidoManager.Instance.PlaySound_SE(missClip);
+            }
+            else
+            {
+                AuidoManager.Instance.PlaySound_SE(correctClip);
+            }
         }
 
         /// <summary>

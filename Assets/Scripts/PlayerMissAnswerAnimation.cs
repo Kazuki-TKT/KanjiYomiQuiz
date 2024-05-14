@@ -35,7 +35,8 @@ namespace KanjiYomi
         [SerializeField]
         CanvasGroup damageCanvasGroup;
 
-        //CancellationTokenSource cts;
+        //Œø‰Ê‰¹
+        public AudioClip damageClip, steamClip;
         void Start()
         {
             impulseSource.m_ImpulseDefinition.m_TimeEnvelope.m_SustainTime = animationTime;
@@ -58,7 +59,10 @@ namespace KanjiYomi
         public async UniTask<bool>  MissAnimation(CancellationToken token)
         {
             bool end;
-            foreach(ParticleSystem particleSystem in smokeParticle)
+            AuidoManager.Instance.PlaySound_SE(damageClip);
+            AuidoManager.Instance.PlaySound_SE(steamClip);
+
+            foreach (ParticleSystem particleSystem in smokeParticle)
             {
                 particleSystem.Play();
             }

@@ -6,6 +6,7 @@ namespace KanjiYomi
 {
     public class IMEExample : MonoBehaviour
     {
+        public AudioSource inputSource;
         private void OnEnable()
         {
             var keyboard = Keyboard.current;
@@ -30,13 +31,15 @@ namespace KanjiYomi
         // 入力された文字を文字コード（16進数）と共に表示
         private void OnTextInput(char ch)
         {
-           // print($"OnTextInput: {ch}({(int)ch:X02})");
+            // print($"OnTextInput: {ch}({(int)ch:X02})");
+            inputSource.Play();
         }
 
         // IMEの入力中の文字列を受け取る
         private void OnIMECompositionChange(IMECompositionString str)
         {
-           // print($"OnIMECompositionChange: {str}");
+            // print($"OnIMECompositionChange: {str}");
+            inputSource.Play();
         }
     }
 }
