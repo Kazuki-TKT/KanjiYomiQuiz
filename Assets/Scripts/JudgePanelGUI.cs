@@ -1,37 +1,49 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// 問題の正解、不正解時のオブジェクトを操作するクラス
+    /// </summary>
     public class JudgePanelGUI : MonoBehaviour
     {
         [SerializeField]
         QuestionGameController questionGameController;
+
+        //プレイヤー不正解時のアニメーション
         [SerializeField]
         PlayerMissAnswerAnimation playerMissAnswerAnimation;
+
+        //正解、不正解時のオブジェクト。インプットフィールドのオブジェクト
         [SerializeField]
         GameObject correctPanelObjects,missPanelObjects, inputFieldObject;
+
+        //問題、答え、説明を表示するTMP
         [SerializeField]
         TextMeshProUGUI[] questionText, correctText, descriptionText;
 
+        //正解、不正解時のSE
         public AudioClip correctClip, missClip;
+
         private void Awake()
         {
-            // QuestionGameControllerのイベントを購読
-            questionGameController.OnJudgeStateChanged += HandleJudgeStateChanged;
-            GameManager.OnGameStateChanged += HandleGameStateChanged;
-            playerMissAnswerAnimation.OnMissAnimationComplete+=()=> missPanelObjects.SetActive(true);
+            questionGameController.OnJudgeStateChanged += HandleJudgeStateChanged;// QuestionGameControllerのイベントを購読
+            GameManager.OnGameStateChanged += HandleGameStateChanged;// QuestionGameControllerのイベントを購読
+            playerMissAnswerAnimation.OnMissAnimationComplete+=()=> missPanelObjects.SetActive(true);// PlayerMissAnswerAnimationのイベントを購読
 
         }
+
         private void OnDestroy()
         {
+            //解除
             questionGameController.OnJudgeStateChanged -= HandleJudgeStateChanged;
             GameManager.OnGameStateChanged -= HandleGameStateChanged;
             playerMissAnswerAnimation.OnMissAnimationComplete -= () => missPanelObjects.SetActive(true);
         }
+
+        //ゲームステートによって分岐するメソッド
         private void HandleGameStateChanged(GameState state)
         {
             if (state == GameState.GameOver||
@@ -41,9 +53,10 @@ namespace KanjiYomi
                 missPanelObjects.SetActive(false);
             }
         }
+
+        //正解、不正解、その他によって分岐するメソッド
         private void HandleJudgeStateChanged(QuestionGameController.Judge newJudge)
         {
-            //Debug.Log(newJudge);
             // newJudgeの値に応じて処理を分岐
             switch (newJudge)
             {
@@ -62,10 +75,12 @@ namespace KanjiYomi
             }
         }
 
+        //指定秒待ってからオブジェクトと音を鳴らすコルーチン
         IEnumerator WaitDisplayPanel(GameObject gameObject,float duration, QuestionGameController.Judge newJudge)
         {
             yield return new WaitForSeconds(duration);
             gameObject.SetActive(true);
+            // newJudgeの値に応じて処理を分岐
             if (newJudge == QuestionGameController.Judge.Miss)
             {
                AuidoManager.Instance.PlaySound_SE(missClip);
@@ -90,16 +105,16 @@ namespace KanjiYomi
             {
                 //GUI用にstringで装飾を行う
                 questionString = $"<color=#{TextColor.ORANGE:X}>{questionData.Question.Replace(questionData.AdjectiveString, "")}</color>" +
-                $"<color=#{TextColor.BLACK:X}><size=40%>{questionData.AdjectiveString}</size></color>";
+                $"<color=#{TextColor.WHITE:X}><size=40%>{questionData.AdjectiveString}</size></color>";
 
-                correctString = $"<color=#{TextColor.ORANGE:X}>{questionData.Correct}</color>" +
-                $"<color=#{TextColor.BLACK:X}>{questionData.AdjectiveString}</color>";
+                correctString = $"<color=#{TextColor.ORANGE:X}>{questionData.Correct[0]}</color>" +
+                $"<color=#{TextColor.WHITE:X}>{questionData.AdjectiveString}</color>";
             }
             else
             {
                 //GUI用にstringで装飾を行う
                 questionString = $"<color=#{TextColor.ORANGE:X}>{questionData.Question}</color>";
-                correctString = $"<color=#{TextColor.ORANGE:X}>{questionData.Correct}</color>";
+                correctString = $"<color=#{TextColor.ORANGE:X}>{questionData.Correct[0]}</color>";
             }
 
             //正解と不正解のGUIに問題をセット

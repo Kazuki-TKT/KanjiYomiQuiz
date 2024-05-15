@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Cinemachine;
@@ -8,9 +7,13 @@ using UnityEngine.Playables;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// プレイヤーを管理するインスタンスクラス
+    /// </summary>
     public class PlayerController : MonoBehaviour
     {
         public static PlayerController Instance;
+
         //プレイヤーがもつライフの最大値
         private int maxPlayerLife = 3;
         public int MaxPlayerLife { get => maxPlayerLife; }
@@ -32,17 +35,19 @@ namespace KanjiYomi
         //マズルエフェクト
         [SerializeField]
         ParticleSystem[] muzzleParticle;
+
         //画面揺れ
         [SerializeField]
         CinemachineImpulseSource impulseSource;
+
         //重火器音
         public AudioClip gunFireClip;
 
-        //タイムライン類
+        //--タイムライン類
         [SerializeField]
         PlayableDirector cameraDirector;
         public TimelineAsset[] timelineAssets;
-        bool directorStop;
+        bool directorStop;//タイムラインの終了を管理するブール型
         public bool DirectorStop { get => directorStop; }
 
         //プレイヤーがミスした時のアニメーション
@@ -51,7 +56,6 @@ namespace KanjiYomi
         //インプットフィールド
         [SerializeField]
         PlayerInputFieldGUI playerInput;
-       
 
         // プレイヤーのライフが変更されたときに通知するイベント
         public static event Action<int> OnPlayerLifeChanged;
@@ -63,13 +67,15 @@ namespace KanjiYomi
 
         void Start()
         {
-            cameraDirector.played += Director_Played;
-            cameraDirector.stopped += Director_Stopped;
+            cameraDirector.played += Director_Played;//タイムライン開始時に実行される処理を登録
+            cameraDirector.stopped += Director_Stopped;//タイムライン終了時に実行される処理を登録
         }
         private void OnEnable()
         {
-            playerLife = maxPlayerLife;
+            SetDefaultPlayerLife();
         }
+
+        //プレイヤーのライフを初期値にするメソッド
         public void SetDefaultPlayerLife()
         {
             PlayerLife = MaxPlayerLife; // 初期ライフを設定
@@ -81,40 +87,48 @@ namespace KanjiYomi
             PlayerLife--; // ライフを減らす
         }
 
+        //指定のタイムラインを再生するメソッド
         public void PlayCameraMove(TimelineAsset timelineAsset)
         {
             cameraDirector.Play(timelineAsset);
             
         }
+
+        //タイムライン開始時に実行されるメソッド
         void Director_Played(PlayableDirector obj)
         {
-            directorStop = false;
-            playerInput.OffInputField();
+            directorStop = false;//タイムラインの終了を管理するブールをOFF
+            playerInput.OffInputField();//インプットフィールドをOFF
         }
 
+        //タイムライン終了時に実行されるメソッド
         void Director_Stopped(PlayableDirector obj)
         {
-            directorStop = true;
-            playerInput.OnInputField();
+            directorStop = true;//タイムラインの終了を管理するブールをON
+            playerInput.OnInputField();//インプットフィールドをON
 
         }
+
+        //プレイヤーの攻撃を行うメソッド
         public void PlayerAttack(float duration)
         {
             StartCoroutine(GunAction(duration));
         }
 
+        //ガンアクションを行うコルーチン
         IEnumerator GunAction(float duration)
         {
-            impulseSource.GenerateImpulse();
-            AuidoManager.Instance.PlaySound_SE(gunFireClip);
-            foreach (ParticleSystem particle in muzzleParticle)
+            impulseSource.GenerateImpulse();//画面を揺らす
+            AuidoManager.Instance.PlaySound_SE(gunFireClip);//重火器音の再生
+            foreach (ParticleSystem particle in muzzleParticle)//マズルエフェクトの再生
             {
                 particle.Play();
                 yield return new WaitForSeconds(0.1f);
             }
-            yield return new WaitForSeconds(duration);
 
-            foreach (ParticleSystem particle in muzzleParticle)
+            yield return new WaitForSeconds(duration);//指定秒待機
+
+            foreach (ParticleSystem particle in muzzleParticle)//マズルエフェクトの終了
             {
                 particle.Stop();
             }

@@ -1,44 +1,57 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// GameStateがゲームクリアとゲームオーバーになった時に実行するクラス
+    /// </summary>
     public class GameClearAndOver : MonoBehaviour
     {
+        //ゲームクリアとゲームオーバー用のオブジェクト
         public GameObject gameClearObject, gameOverObject;
+        //ゲームクリアとゲームオーバー用のTMP
         public TextMeshProUGUI gameClearText, gameOverText;
 
         private void Awake()
         {
-            GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
+            GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;//登録
         }
 
         private void OnDestroy()
         {
-            GameManager.OnGameStateChanged -= GameManagerOnGameStateChanged;
+            GameManager.OnGameStateChanged -= GameManagerOnGameStateChanged;//解除
         }
+
+        /// <summary>
+        /// ステート変更時に行われるメソッド
+        /// </summary>
         void GameManagerOnGameStateChanged(GameState state)
         {
-            if (state == GameState.GameOver) {
-                gameOverObject.SetActive(true);
-                AnimateGameClear(gameOverText);
-
-            } else if (state == GameState.GameClear)
+            //GameClear
+            if (state == GameState.GameClear)
             {
                 gameClearObject.SetActive(true);
                 AnimateGameClear(gameClearText);
             }
+            //GameOver
+            else if (state == GameState.GameOver)
+            {
+                gameOverObject.SetActive(true);
+                AnimateGameClear(gameOverText);
+
+            }
+            //Other
             else
             {
                 gameOverObject.SetActive(false);
                 gameClearObject.SetActive(false);
-
             }
         }
+
+        //文字のアニメーション
         public void AnimateGameClear(TextMeshProUGUI text)
         {
             text.rectTransform.localScale = Vector3.zero;

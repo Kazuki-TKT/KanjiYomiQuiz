@@ -1,74 +1,74 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// シーン移動用のシングルトンパターンのクラス
+    /// </summary>
     public class SceneLoader : MonoBehaviour
     {
-        //public CanvasGroup fadeCanvasGroup; // フェード用のCanvasGroup
-        //public TextMeshProUGUI loadingText; // ローディングテキスト表示用
-        //public Button[] sceneChangeButton;
-        //public string sceneName;
-        //public GameState gameChangeState;
+        public static SceneLoader Instance;
 
-        //private void Start()
-        //{
-        //    // 初期状態でフェードキャンバスを透明に設定
-        //    fadeCanvasGroup.alpha = 0;
-        //    foreach(Button button in sceneChangeButton)
-        //    {
-        //        button.onClick.AddListener(() => LoadSceneAsync(sceneName).Forget());
-        //    }
-        //}
+        // フェード用のCanvasGroup
+        public CanvasGroup fadeCanvasGroup;
 
-        //public async UniTaskVoid LoadSceneAsync(string sceneName)
-        //{
-        //    await FadeOutAsync(); // フェードアウト
-        //    loadingText.text = "Loading..."; // ローディングテキスト表示
-        //                                     // シーンを非同期でロード
-        //    var sceneLoadOperation = SceneManager.LoadSceneAsync(sceneName);
+        // ローディングテキスト表示用
+        TextMeshProUGUI loadingText;
 
-        //    // シーンのロードが完了するまで待機
-        //    await sceneLoadOperation;
-        //    // シーンのロード後の処理
-        //    GameManager.Instance.UpdateGameState(gameChangeState);
-        //    //await FadeInAsync(); // フェードイン
-        //    //loadingText.text = ""; // ローディングテキストをクリア
-        //}
+        //Fadeが終わったかどうかの真偽地
+        public bool fadeOut;
 
-        //private async UniTask FadeOutAsync()
-        //{
-        //    fadeCanvasGroup.blocksRaycasts = true; // フェード中はUIの操作をブロック
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
 
-        //    float fadeDuration = 1f; // フェードの時間
-        //    float timer = 0f;
+        private void Start()
+        {
+            //初期化
+            fadeCanvasGroup = this.gameObject.GetComponent<CanvasGroup>();
+            fadeCanvasGroup.alpha = 0;
+            loadingText = this.gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        }
 
-        //    while (timer <= fadeDuration)
-        //    {
-        //        timer += Time.deltaTime;
-        //        fadeCanvasGroup.alpha = Mathf.Lerp(0, 1, timer / fadeDuration);
-        //        await UniTask.Yield(PlayerLoopTiming.Update);
-        //    }
-        //}
+        public async UniTaskVoid LoadSceneAsync(string sceneName,GameState gameState)
+        {
+            
+            await FadeOutAsync(1); // フェードアウト
+            loadingText.text = "Loading..."; // ローディングテキスト表示
+            var sceneLoadOperation = SceneManager.LoadSceneAsync(sceneName);// シーンを非同期でロード
+            await sceneLoadOperation;// シーンのロードが完了するまで待機
+            await FadeInAsync(1);// フェードイン
+            GameManager.Instance.UpdateGameState(gameState);// 指定のステートにチェンジ
+        }
 
-        //private async UniTask FadeInAsync()
-        //{
-        //    float fadeDuration = 1f; // フェードの時間
-        //    float timer = 0f;
+        private async UniTask FadeOutAsync(float duration)
+        {
+            fadeCanvasGroup.blocksRaycasts = true; // フェード中はUIの操作をブロック
 
-        //    while (timer <= fadeDuration)
-        //    {
-        //        timer += Time.deltaTime;
-        //        fadeCanvasGroup.alpha = Mathf.Lerp(1, 0, timer / fadeDuration);
-        //        await UniTask.Yield(PlayerLoopTiming.Update);
-        //    }
+            //--FadeOutが完了するまで待機
+            await fadeCanvasGroup.DOFade(1, duration).SetEase(Ease.Linear);
+        }
 
-        //    fadeCanvasGroup.blocksRaycasts = false; // フェード完了後はUIの操作を許可
-        //}
+        private async UniTask FadeInAsync(float duration)
+        {
+            //--FadeInが完了するまで待機
+            await fadeCanvasGroup.DOFade(0, duration).SetEase(Ease.Linear);
+
+            fadeCanvasGroup.blocksRaycasts = false; // フェード完了後はUIの操作を許可
+
+        }
     }
 }

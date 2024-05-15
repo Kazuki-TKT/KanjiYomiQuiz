@@ -1,12 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System;
-using UnityEngine.UI;
 using TMPro;
 namespace KanjiYomi
 {
+    /// <summary>
+    /// 問題を管理するシングルトンパターンのクラス
+    /// </summary>
     public class QuestionManager : MonoBehaviour
     {
 
@@ -24,14 +25,15 @@ namespace KanjiYomi
         /// </summary>
         public List<QuestionData> questionDatas = new List<QuestionData>();
 
+        //一時的に問題を格納するList
         List<QuestionData> randomDatas = new List<QuestionData>();
 
-        public
-        List<QuestionData> randomEasyDatas = new List<QuestionData>();
-        List<QuestionData> randomNormalDatas = new List<QuestionData>();
-        List<QuestionData> randomHardDatas = new List<QuestionData>();
-        List<QuestionData> randomHellDatas = new List<QuestionData>();
+        List<QuestionData> randomEasyDatas = new List<QuestionData>();//難易度:Easyが格納されるデータリスト
+        List<QuestionData> randomNormalDatas = new List<QuestionData>();//難易度:Normalが格納されるデータリスト
+        List<QuestionData> randomHardDatas = new List<QuestionData>();//難易度:Hardが格納されるデータリスト
+        List<QuestionData> randomHellDatas = new List<QuestionData>();//難易度:Hellが格納されるデータリスト
 
+        //現在の問題のデータ
         QuestionData currentData;
         public QuestionData CurrentData { get => currentData; set => currentData = value; }
 
@@ -53,7 +55,7 @@ namespace KanjiYomi
         /// </summary>
         public void GetQuestionData(int count)
         {
-            switch (count)
+            switch (count)//正答数により分岐
             {
                 case 0:
                 case 1:
@@ -75,6 +77,13 @@ namespace KanjiYomi
                     break;
             }
         }
+
+        /// <summary>
+        /// 特定の難易度のリストの先頭を取得するメソッド
+        /// 問題がなくなった場合はもう一度生成する
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="difficulty"></param>
         private void GetRandomData(List<QuestionData> dataList, Difficulty difficulty)
         {
                 currentData = dataList.First();
@@ -85,6 +94,7 @@ namespace KanjiYomi
             }
         }
 
+        //各難易度の問題を生成するメソッド
         public void CreateQuestionData()
         {
             SortDifficultyData(Difficulty.Easy);
@@ -93,17 +103,20 @@ namespace KanjiYomi
             SortDifficultyData(Difficulty.Hell);
         }
 
+        /// <summary>
+        /// スクリタブルアセットの問題集をシャッフルし各難易度のリストに代入するメソッド
+        /// </summary>
+        /// <param name="difficulty"></param>
         void SortDifficultyData(Difficulty difficulty)
         {
-            randomDatas.Clear();
-            foreach (QuestionData questionData in quesitonCollectionAsset.questionData)
+            randomDatas.Clear();//ランダムデータリストを空にする
+            foreach (QuestionData questionData in quesitonCollectionAsset.questionData)//指定の難易度の問題だけをランダムデータリストに格納
             {
                 if (questionData.questionDifficulty != difficulty) continue;
                 randomDatas.Add(questionData);
             }
-            // リストをランダムに並べ替えて、先頭から指定カウントまでquestionDatasに追加
-            randomDatas = randomDatas.OrderBy(a => Guid.NewGuid()).ToList();
-            switch (difficulty)
+            randomDatas = randomDatas.OrderBy(a => Guid.NewGuid()).ToList();// ランダムリストをランダムに並べ替える
+            switch (difficulty)//指定の難易度のリストにランダムリストの値を代入
             {
                 case Difficulty.Easy:
                     randomEasyDatas = randomDatas.OrderBy(a => Guid.NewGuid()).ToList();
@@ -125,14 +138,23 @@ namespace KanjiYomi
         /// </summary>
         public bool CheckQuestion(QuestionData questionData, TMP_InputField inputField)
         {
-            if (questionData.Correct == inputField.text)
+            bool correct = false;
+            foreach(string questionString in questionData.Correct)
             {
-                return true;
+                if (questionString == inputField.text)
+                {
+                    correct =true;
+                }
             }
-            else
-            {
-                return false;
-            }
+            return correct;
+            //if (questionData.Correct == inputField.text)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
     }
 }

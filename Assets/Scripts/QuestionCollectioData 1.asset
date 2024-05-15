@@ -1,0 +1,303 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef8a45c768e53f34dbcb75fb5808d47c, type: 3}
+  m_Name: QuestionCollectioData 1
+  m_EditorClassIdentifier: 
+  questionData:
+  - questionID: 0
+    questionDifficulty: 3
+    question: "\u6241\u6843"
+    correct:
+    - "\u30A2\u30FC\u30E2\u30F3\u30C9"
+    - "\u3042\u30FC\u3082\u3093\u3069"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30D0\u30E9\u79D1\u30B5\u30AF\u30E9\u5C5E\u306E\u843D\u8449\u9AD8\u6728\u304A\u3088\u3073\u305D\u306E\u679C\u5B9F\u306E\u7A2E\u5B50\u304B\u3089\u4F5C\u308B\u30CA\u30C3\u30C4"
+  - questionID: 1
+    questionDifficulty: 3
+    question: "\u89D2\u9D1F"
+    correct:
+    - "\u307F\u307F\u305A\u304F"
+    - "\u30DF\u30DF\u30BA\u30AF"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30D5\u30AF\u30ED\u30A6\u79D1\u306E\u9CE5\u306E\u3046\u3061\u3001\u982D\u90E8\u306B\u8033\u72B6\u306E\u7FBD\u6BDB\u3092\u3082\u3064\u7A2E\u985E\u306E\u547C\u79F0"
+  - questionID: 2
+    questionDifficulty: 3
+    question: "\u53E3\u98A8\u7434"
+    correct:
+    - "\u30CF\u30FC\u30E2\u30CB\u30AB"
+    - "\u306F\u30FC\u3082\u306B\u304B"
+    adjective: 0
+    adjectiveString: 
+    description: "\u591A\u6570\u306E\u30EA\u30FC\u30C9\uFF08\u632F\u52D5\u4F53\uFF09\u3092\u53CE\u3081\u305F\u7BB1\u72B6\u306E\u697D\u5668"
+  - questionID: 4
+    questionDifficulty: 3
+    question: "\u5DF4\u7F85\u8C9D"
+    correct:
+    - "\u30D1\u30E9\u30B0\u30A2\u30A4"
+    - "\u3071\u3089\u3050\u3042\u3044"
+    adjective: 0
+    adjectiveString: 
+    description: "\u897F\u3068\u5317\u897F\u3092\u30DC\u30EA\u30D3\u30A2\u3001\u5357\u3068\u5357\u897F\u3092\u30A2\u30EB\u30BC\u30F3\u30C1\u30F3\u306B\u56F2\u307E\u308C\u3066\u3044\u308B\u5185\u9678\u56FD"
+  - questionID: 5
+    questionDifficulty: 3
+    question: "\u86DE\u8753"
+    correct:
+    - "\u306A\u3081\u304F\u3058"
+    - "\u30CA\u30E1\u30AF\u30B8"
+    adjective: 0
+    adjectiveString: 
+    description: "\u9678\u306B\u751F\u606F\u3059\u308B\u5DFB\u8C9D\uFF08\u8EDF\u4F53\u52D5\u7269\u9580\u8179\u8DB3\u7DB1\uFF09\u306E\u3046\u3061\u3001\u6BBB\u304C\u9000\u5316\u3057\u3066\u3044\u308B\u3082\u306E\u306E\u7DCF\u79F0"
+  - questionID: 6
+    questionDifficulty: 0
+    question: "\u4EBA\u53C2"
+    correct:
+    - "\u306B\u3093\u3058\u3093"
+    - "\u30CB\u30F3\u30B8\u30F3"
+    adjective: 0
+    adjectiveString: 
+    description: "\u4E2D\u592E\u30A2\u30B8\u30A2\u539F\u7523\u306E\u30BB\u30EA\u79D1\u30CB\u30F3\u30B8\u30F3\u5C5E\u306E\u4E8C\u5E74\u8349"
+  - questionID: 7
+    questionDifficulty: 0
+    question: "\u60AA\u5BD2"
+    correct:
+    - "\u304A\u304B\u3093"
+    - "\u30AA\u30AB\u30F3"
+    adjective: 0
+    adjectiveString: 
+    description: "\u5916\u304B\u3089\u306E\u5BD2\u3055\u306B\u5BFE\u6297\u3057\u3066\u7B4B\u8089\u3092\u9707\u308F\u305B\u3066\u4F53\u6E29\u3092\u4F5C\u3063\u3066\u3044\u308B\u53CD\u5FDC"
+  - questionID: 8
+    questionDifficulty: 0
+    question: "\u7A4D\u4E71\u96F2"
+    correct:
+    - "\u305B\u304D\u3089\u3093\u3046\u3093"
+    - "\u30BB\u30AD\u30E9\u30F3\u30A6\u30F3"
+    adjective: 0
+    adjectiveString: 
+    description: "\u7A4D\u96F2\u304C\u767A\u9054\u3057\u5C71\u306E\u3088\u3046\u306B\u76DB\u308A\u4E0A\u304C\u3063\u305F\u3001\u96E8\u3084\u96F7\u3092\u4F34\u3046\u96F2"
+  - questionID: 9
+    questionDifficulty: 0
+    question: "\u6E07\u671B"
+    correct:
+    - "\u304B\u3064\u307C\u3046"
+    - "\u30AB\u30C4\u30DC\u30A6"
+    adjective: 0
+    adjectiveString: 
+    description: "\u306E\u3069\u306E\u304B\u308F\u3044\u305F\u4EBA\u304C\u6C34\u3092\u307B\u3057\u304C\u308B\u3088\u3046\u306B\u3001\u5FC3\u304B\u3089\u9858\u671B\u3059\u308B\u3053\u3068"
+  - questionID: 10
+    questionDifficulty: 0
+    question: "\u9D8F\u5375"
+    correct:
+    - "\u3051\u3044\u3089\u3093"
+    - "\u30B1\u30A4\u30E9\u30F3"
+    adjective: 0
+    adjectiveString: 
+    description: "\u306B\u308F\u3068\u308A\u306E\u305F\u307E\u3054"
+  - questionID: 11
+    questionDifficulty: 0
+    question: "\u9BAD"
+    correct:
+    - "\u3055\u3051"
+    - "\u30B5\u30B1"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30B5\u30B1\u76EE\u30B5\u30B1\u79D1\u30B5\u30B1\u5C5E\u306E\u9B5A"
+  - questionID: 12
+    questionDifficulty: 0
+    question: "\u9BDB"
+    correct:
+    - "\u305F\u3044"
+    - "\u30BF\u30A4"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30B9\u30BA\u30AD\u76EE\u30BF\u30A4\u79D1\u306E\u7DCF\u79F0"
+  - questionID: 13
+    questionDifficulty: 0
+    question: "\u674F\u5B50"
+    correct:
+    - "\u3042\u3093\u305A"
+    - "\u30A2\u30F3\u30BA"
+    adjective: 0
+    adjectiveString: 
+    description: "\u3070\u3089\u79D1\u306E\u843D\u8449\u5C0F\u9AD8\u6728"
+  - questionID: 14
+    questionDifficulty: 1
+    question: "\u7121\u82B1\u679C"
+    correct:
+    - "\u3044\u3061\u3058\u304F"
+    - "\u30A4\u30C1\u30B8\u30AF"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30AF\u30EF\u79D1\u30A4\u30C1\u30B8\u30AF\u5C5E\u306E\u843D\u8449\u9AD8\u6728"
+  - questionID: 15
+    questionDifficulty: 1
+    question: "\u5357\u74DC"
+    correct:
+    - "\u304B\u307C\u3061\u3083"
+    - "\u30AB\u30DC\u30C1\u30E3"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30A6\u30EA\u79D1\u30AB\u30DC\u30C1\u30E3\u5C5E\u306B\u5C5E\u3059\u308B\u679C\u83DC\u306E\u7DCF\u79F0"
+  - questionID: 16
+    questionDifficulty: 1
+    question: "\u5411\u65E5\u8475"
+    correct:
+    - "\u3072\u307E\u308F\u308A"
+    - "\u30D2\u30DE\u30EF\u30EA"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30D2\u30DE\u30EF\u30EA\u306F\u3001\u30AD\u30AF\u79D1\u306E\u4E00\u5E74\u8349\u306E\u690D\u7269"
+  - questionID: 17
+    questionDifficulty: 1
+    question: "\u571F\u7ADC"
+    correct:
+    - "\u3082\u3050\u3089"
+    - "\u30E2\u30B0\u30E9"
+    adjective: 0
+    adjectiveString: 
+    description: "\u3082\u3050\u3089\u79D1\u306E\u54FA\u4E73\u52D5\u7269\u3002\u5730\u4E2D\u306B\u5751\u9053\u3092\u6398\u3063\u3066\u9032\u307F\u3001\u571F\u4E2D\u306E\u866B\u3092\u98DF\u3046"
+  - questionID: 18
+    questionDifficulty: 1
+    question: "\u9C10"
+    correct:
+    - "\u308F\u306B"
+    - "\u30EF\u30CB"
+    adjective: 0
+    adjectiveString: 
+    description: "\u308F\u306B\u79D1\u306E\u722C\u866B\u985E\u306E\u7DCF\u79F0"
+  - questionID: 19
+    questionDifficulty: 1
+    question: "\u5A01\u5687"
+    correct:
+    - "\u3044\u304B\u304F"
+    - "\u30A4\u30AB\u30AF"
+    adjective: 0
+    adjectiveString: 
+    description: "\u304A\u3069\u3057\u3064\u3051\u308B\u3053\u3068\u3002\u5A01\u529B\u30FB\u6B66\u529B\u306A\u3069\u306B\u3088\u308B\u304A\u3069\u304B\u3057"
+  - questionID: 20
+    questionDifficulty: 1
+    question: "\u6817\u9F20"
+    correct:
+    - "\u308A\u3059"
+    - "\u30EA\u30B9"
+    adjective: 0
+    adjectiveString: 
+    description: "\u9F67\u6B6F\u76EE\u30EA\u30B9\u79D1\u306B\u5C5E\u3059\u308B\u52D5\u7269\u306E\u7DCF\u79F0"
+  - questionID: 21
+    questionDifficulty: 1
+    question: "\u59D1\u606F"
+    correct:
+    - "\u3053\u305D\u304F"
+    - "\u30B3\u30BD\u30AF"
+    adjective: 0
+    adjectiveString: 
+    description: "\u4E00\u6642\u306E\u307E\u306B\u3042\u308F\u305B\u3002\u305D\u306E\u5834\u306E\u304C\u308C"
+  - questionID: 21
+    questionDifficulty: 1
+    question: "\u67AF\u6E07"
+    correct:
+    - "\u3053\u304B\u3064"
+    - "\u30B3\u30AB\u30C4"
+    adjective: 0
+    adjectiveString: 
+    description: "\u3072\u3042\u304C\u3063\u3066\u6C34\u304C\u306A\u304F\u306A\u308B\u3053\u3068"
+  - questionID: 22
+    questionDifficulty: 2
+    question: "\u52A0\u52A0\u963F"
+    correct:
+    - "\u30AB\u30AB\u30AA"
+    - "\u304B\u304B\u304A"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30A2\u30AA\u30A4\u79D1\u306E\u5E38\u7DD1\u6A39\u3002\u30C1\u30E7\u30B3\u30EC\u30FC\u30C8\u306A\u3069\u306E\u539F\u6599"
+  - questionID: 23
+    questionDifficulty: 2
+    question: "\u90ED\u516C"
+    correct:
+    - "\u30AB\u30C3\u30B3\u30A6"
+    - "\u304B\u3063\u3053\u3046"
+    adjective: 0
+    adjectiveString: 
+    description: "\u9CE5\u7DB1\u30AB\u30C3\u30B3\u30A6\u76EE\u30AB\u30C3\u30B3\u30A6\u79D1\u306B\u5206\u985E\u3055\u308C\u308B\u9CE5"
+  - questionID: 24
+    questionDifficulty: 2
+    question: "\u9C08"
+    correct:
+    - "\u304B\u308C\u3044"
+    - "\u30AB\u30EC\u30A4"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30AB\u30EC\u30A4\u76EE\u30AB\u30EC\u30A4\u79D1\u306B\u5206\u985E\u3055\u308C\u308B\u9B5A\u985E\u306E\u7DCF\u79F0"
+  - questionID: 25
+    questionDifficulty: 2
+    question: "\u6728\u8033"
+    correct:
+    - "\u304D\u304F\u3089\u3052"
+    - "\u30AD\u30AF\u30E9\u30B2"
+    adjective: 0
+    adjectiveString: 
+    description: "\u5F62\u304C\u4EBA\u306E\u8033\u3084\u304F\u3089\u3052\u306B\u4F3C\u305F\u3001\u304D\u304F\u3089\u3052\u79D1\u306E\u304D\u306E\u3053"
+  - questionID: 26
+    questionDifficulty: 2
+    question: "\u8E1D"
+    correct:
+    - "\u304F\u308B\u3076\u3057"
+    - "\u30AF\u30EB\u30D6\u30B7"
+    adjective: 0
+    adjectiveString: 
+    description: "\u8DB3\u9996\u306E\u95A2\u7BC0\u306E\u4E21\u5074\u306E\u7A81\u8D77\u3057\u305F\u9AA8"
+  - questionID: 27
+    questionDifficulty: 2
+    question: "\u6728\u6813"
+    correct:
+    - "\u30B3\u30EB\u30AF"
+    - "\u3053\u308B\u304F"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30B3\u30EB\u30AF\u6A2B\u304B\u3089\u5265\u3044\u3060\u6A39\u76AE"
+  - questionID: 28
+    questionDifficulty: 2
+    question: "\u6728\u6813"
+    correct:
+    - "\u30B3\u30EB\u30AF"
+    - "\u3053\u308B\u304F"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30B3\u30EB\u30AF\u6A2B\u304B\u3089\u5265\u3044\u3060\u6A39\u76AE"
+  - questionID: 29
+    questionDifficulty: 1
+    question: "\u592A\u5200\u9B5A"
+    correct:
+    - "\u305F\u3061\u3046\u304A"
+    - "\u30BF\u30C1\u30A6\u30AA"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30B9\u30BA\u30AD\u76EE\u30B5\u30D0\u4E9C\u76EE\u30BF\u30C1\u30A6\u30AA\u79D1\u306B\u5C5E\u3059\u308B\u9B5A\u985E"
+  - questionID: 30
+    questionDifficulty: 2
+    question: "\u6D77\u99AC"
+    correct:
+    - "\u3068\u3069"
+    - "\u30C8\u30C9"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30A2\u30B7\u30AB\u79D1\u306E\u54FA\u4E73\u985E"
+  - questionID: 31
+    questionDifficulty: 2
+    question: "\u6392\u7403"
+    correct:
+    - "\u30D0\u30EC\u30FC\u30DC\u30FC\u30EB"
+    - "\u3070\u308C\u30FC\u307C\u30FC\u308B"
+    adjective: 0
+    adjectiveString: 
+    description: "\u30CD\u30C3\u30C8\u8D8A\u3057\u306B\u30DC\u30FC\u30EB\u3092\u6253\u3061\u5408\u3046\u30C1\u30FC\u30E0\u30B9\u30DD\u30FC\u30C4"

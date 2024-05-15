@@ -6,12 +6,19 @@ using System;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// ゲームを管理するシングルトンパターンのクラス
+    /// </summary>
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance;
 
-        public GameState gameState;
+        //現在のステートを格納する
+        public GameState currentGameState;
 
+        /// <summary>
+        /// ゲームの状態が変更されたときに通知を受け取るためのイベント
+        /// </summary>
         public static event Action<GameState> OnGameStateChanged;
         
         private void Awake()
@@ -26,16 +33,21 @@ namespace KanjiYomi
                 Destroy(gameObject);
             }
         }
+
         void Start()
         {
-            UpdateGameState(GameState.Title);
+            UpdateGameState(GameState.Title);//ゲーム開始時のステートはTitle
         }
 
+        /// <summary>
+        /// ゲームのステートを変更するメソッド
+        /// </summary>
+        /// <param name="newState">新しいゲームステート</param>
         public void UpdateGameState(GameState newState)
         {
-            //gameState = newState;
-            if (gameState == newState)return;
-            switch (newState)
+            if (currentGameState == newState)return;//現在のステートと同じ場合はリターン
+            currentGameState = newState;//現在のステートに新しいステートを代入
+            switch (newState)//ステートによって分岐処理
             {
                 case GameState.Title:
                     HandleTitle();
@@ -50,42 +62,48 @@ namespace KanjiYomi
                     HandleGameClear();
                     break;
             }
+            OnGameStateChanged?.Invoke(newState);//登録したイベントの実行
 
-            OnGameStateChanged?.Invoke(newState);
         }
 
-
+        //Playing時に実行されるメソッド
         private void HandlePlaying()
         {
-            Debug.Log($"<color=red>{gameState}</color>");
+            Debug.Log($"<color=red>{currentGameState}</color>");
             AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.Playng);
         }
 
+        //Playing時に実行されるメソッド
         private void HandleTitle()
         {
-            Debug.Log($"<color=red>{gameState}</color>");
+            Debug.Log($"<color=red>{currentGameState}</color>");
             AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.Title);
         }
 
+        //GameClear時に実行されるメソッド
         private void HandleGameClear()
         {
-            Debug.Log($"<color=red>{gameState}</color>");
+            Debug.Log($"<color=red>{currentGameState}</color>");
             AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.GameClear);
         }
 
+        //GameOver時に実行されるメソッド
         private void HandleGameOver()
         {
-            Debug.Log($"<color=red>{gameState}</color>");
+            Debug.Log($"<color=red>{currentGameState}</color>");
             AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.GameOver);
         }
     }
 
+    /// <summary>
+    /// ゲームのステート
+    /// </summary>
     public enum GameState
     {
-        Title,
-        Playing,
-        GameOver,
-        GameClear
+        Title,//タイトル
+        Playing,//プレイング
+        GameOver,//ゲームオーバー
+        GameClear//ゲームクリア
     }
 
     /// <summary>

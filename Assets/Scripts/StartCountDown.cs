@@ -2,23 +2,27 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 using System.Collections;
-using Cysharp.Threading.Tasks;
-using System;
-using System.Threading;
-using Unity.VisualScripting.Antlr3.Runtime;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// 3,2,1,GOのテキストアニメーションを行うクラス
+    /// </summary>
     public class StartCountDown : MonoBehaviour
     {
+        //アニメーション用のTMP
         public TextMeshProUGUI countdownText;
 
+        //色
         private Color[] countdownColors = { Color.red, Color.green, Color.blue, Color.yellow };
 
+        //カウント音、GO音
         public AudioClip countClip, goClip;
 
+        //カウントが終了したかどうかの真偽地
         private bool isCountdownFinished = false;
         public bool IsCountdownFinished { get => isCountdownFinished; }
+
         public IEnumerator StartTextCountdown()
         {
             isCountdownFinished = false;

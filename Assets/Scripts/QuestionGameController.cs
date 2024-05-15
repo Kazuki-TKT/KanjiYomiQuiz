@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using Cysharp.Threading.Tasks;
-using TMPro;
-using DG.Tweening;
 using System.Threading;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// 漢字当てゲームをコントロールするクラス
+    /// </summary>
     public class QuestionGameController : MonoBehaviour
     {
+        /// <summary>
+        /// 判定の列挙型
+        /// </summary>
         public enum Judge
         {
             Correct,//正解
@@ -25,62 +27,45 @@ namespace KanjiYomi
         // Judgeが変化したときに発行されるイベント
         public event Action<Judge> OnJudgeStateChanged;
 
-        //◆/◆/◆/◆/◆/◆/◆/◆/◆/◆/◆/◆/◆/◆/◆/◆
-        //
+        //ゲーム開始前の3,2,1,GO!用のカウントダウンを行うクラス
         [SerializeField]
         StartCountDown startCountDown;
+
+        //問題を表示するテキストのクラス
         [SerializeField]
         QuestionTextGUI questionTextGUI;
 
-
         // 一問の最大の回答時間(10秒)
         const float MAX_ANSWER_TIME = 15.0f;
+
         // プレイヤーの答え。true:正解 false不正解
         public bool playerAnswer;
 
         //現在の正解数
         int correctAnswerCount = 0;
         public int CorrectAnswerCount { get => correctAnswerCount; }
+
+        //正解時の音
         public AudioClip correctSE;
+
+        //各問題のレベルが行われたかどうかを管理するフラグ
         public bool level1Flag, level2Flag, level3Flag, level4Flag;
+
+        //各問題のレベル用のテキストを表示させるクラス
+        [SerializeField] LevelTextGUI levelTextGUI;
 
         //カウントダウンアニメーション
         public Animator countDownAnimation;
 
-        //敵モンスターを制御する
+        //敵モンスターを制御するクラス
         [SerializeField] EnemyController enemyController;
-        [SerializeField] LevelTextGUI levelTextGUI;
 
         //キャンセルトークン
         CancellationTokenSource cts;
 
-        private void Awake()
-        {
-            GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
-        }
-
-        private void OnDestroy()
-        {
-            GameManager.OnGameStateChanged -= GameManagerOnGameStateChanged;
-        }
-
-        void Start()
-        {
-        }
-        void Update()
-        {
-            if (Input.GetMouseButtonDown(1)) CancelGame();
-            if (Input.GetKeyDown(KeyCode.Alpha1)) StartGame();
-        }
-
         private void OnEnable()
         {
             StartGame();
-        }
-
-        void GameManagerOnGameStateChanged(GameState state)
-        {
-            //if (state == GameState.Playing) StartGame();
         }
 
         // Judgeの状態を設定し、必要に応じてイベントを発行するメソッド
@@ -98,17 +83,11 @@ namespace KanjiYomi
         // ゲームを始めるメソッド
         public void StartGame()
         {
-            GameManager.Instance.UpdateGameState(GameState.Playing);
-            PlayerController.Instance.SetDefaultPlayerLife();
-            SetGameState(Judge.Initial);
-            // 新しい CancellationTokenSource を作成
-            cts = new CancellationTokenSource();
-
-            // CancellationToken の取得
-            CancellationToken token = cts.Token;
-            // ゲームを開始
-
-            PlayGame(token).Forget();
+            if (GameManager.Instance.currentGameState != GameState.Playing) GameManager.Instance.UpdateGameState(GameState.Playing);//ゲームプレイングじゃない場合ゲームプレイングに変更
+            PlayerController.Instance.SetDefaultPlayerLife(); //プレイヤーのライフを初期値に設定
+            cts = new CancellationTokenSource();// 新しい CancellationTokenSource を作成
+            CancellationToken token = cts.Token;// CancellationToken の取得
+            PlayGame(token).Forget();// ゲームを開始
         }
 
         // ゲームをキャンセルするメソッド
@@ -118,91 +97,83 @@ namespace KanjiYomi
             cts?.Cancel();
         }
 
-
         /// <summary>
         /// ゲームを行う関数
         /// </summary>
         async UniTask PlayGame(CancellationToken token)
         {
+            QuestionManager.Instance.CreateQuestionData();//問題の作成
 
-            correctAnswerCount = 0;
-            level1Flag = level2Flag = level3Flag = level4Flag = false;
-            QuestionManager.Instance.CreateQuestionData();
-            //カウントダウン開始
-            StartCoroutine(startCountDown.StartTextCountdown());
+            //--Fade用のキャンバスグループのblocksRaycastsがオフになるまで待機
+            await UniTask.WaitUntil(() => !SceneLoader.Instance.fadeCanvasGroup.blocksRaycasts, cancellationToken: token);
+
+            correctAnswerCount = 0;//現在の正解数を0にする
+            level1Flag = level2Flag = level3Flag = level4Flag = false;//各レベルのフラグをfalseにする
+            StartCoroutine(startCountDown.StartTextCountdown());//カウントダウン開始
+
+            //--3,2,1,GOのカウンタダウンが終了するまで待機
             await UniTask.WaitUntil(() => startCountDown.IsCountdownFinished);
+
             try
             {
-                while (PlayerController.Instance.PlayerLife > 0
-                    && GameManager.Instance.gameState == GameState.Playing
-                    && correctAnswerCount < 10)
+                while (PlayerController.Instance.PlayerLife > 0//プレイヤーのライフが0より上
+                    && GameManager.Instance.currentGameState == GameState.Playing//ステートがPlaying
+                    && correctAnswerCount < 10)//正解数が10より下
                 {
                     //初期化
                     playerAnswer = false;
-                    SetGameState(Judge.Initial);
+                    SetGameState(Judge.Initial);//判定のステートを初期に
 
-                    //----待機処理----//
+                    //正解数により処理を行う
                     switch (correctAnswerCount)
                     {
                         case 0:
                             if (!level1Flag)
                             {
-                                levelTextGUI.OnDisplayLevelText(correctAnswerCount);
-                                await UniTask.Delay(TimeSpan.FromSeconds(levelTextGUI.duration + 0.5f), cancellationToken: token);
-                                PlayerController.Instance.PlayCameraMove(PlayerController.Instance.timelineAssets[0]);
-                                await UniTask.WaitUntil(() => PlayerController.Instance.DirectorStop, cancellationToken: token);
-                                level1Flag = true;
+                                bool level1 = await ChangeDependingOnFlags(0, token);//レベル1の最初の1回だけ行う
+                                await UniTask.WaitUntil(() => level1);
                             }
+                            level1Flag = true;
                             break;
                         case 3:
                             if (!level2Flag)
                             {
-                                levelTextGUI.OnDisplayLevelText(correctAnswerCount);
-                                await UniTask.Delay(TimeSpan.FromSeconds(levelTextGUI.duration + 0.5f), cancellationToken: token);
-                                PlayerController.Instance.PlayCameraMove(PlayerController.Instance.timelineAssets[1]);
-                                await UniTask.WaitUntil(() => PlayerController.Instance.DirectorStop, cancellationToken: token);
-                                level2Flag = true;
+                                bool level2 = await ChangeDependingOnFlags(1, token);//レベル2の最初の1回だけ行う
+                                await UniTask.WaitUntil(() => level2);
                             }
+                            level2Flag = true;
                             break;
                         case 6:
                             if (!level3Flag)
                             {
-                                levelTextGUI.OnDisplayLevelText(correctAnswerCount);
-                                await UniTask.Delay(TimeSpan.FromSeconds(levelTextGUI.duration + 0.5f), cancellationToken: token);
-                                PlayerController.Instance.PlayCameraMove(PlayerController.Instance.timelineAssets[2]);
-                                await UniTask.WaitUntil(() => PlayerController.Instance.DirectorStop, cancellationToken: token);
-                                level3Flag = true;
+                                bool level3 = await ChangeDependingOnFlags(2, token);//レベル3の最初の1回だけ行う
+                                await UniTask.WaitUntil(() => level3);
                             }
+                            level3Flag = true;
                             break;
                         case 9:
                             if (!level4Flag)
                             {
-                                levelTextGUI.OnDisplayLevelText(correctAnswerCount);
-                                await UniTask.Delay(TimeSpan.FromSeconds(levelTextGUI.duration + 0.5f), cancellationToken: token);
-                                AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.LastBattle);
-                                PlayerController.Instance.PlayCameraMove(PlayerController.Instance.timelineAssets[3]);
-                                await UniTask.WaitUntil(() => PlayerController.Instance.DirectorStop, cancellationToken: token);
-                                level4Flag = true;
+                                AuidoManager.Instance.PlaySound_BGM(BGMData.BGM.LastBattle);//BGM変更
+                                bool level4 = await ChangeDependingOnFlags(3, token);//レベル4の最初の1回だけ行う
+                                await UniTask.WaitUntil(() => level4);
                             }
+                            level4Flag = true;
+                            break;
+                        default:
+
                             break;
                     }
+                    QuestionManager.Instance.GetQuestionData(correctAnswerCount);//問題を取得
+                    enemyController.MonsterSpawnAndAttack(QuestionManager.Instance.CurrentData.questionDifficulty, token);//敵を召喚し、攻撃を行う
 
-                    //問題を取得
-                    QuestionManager.Instance.GetQuestionData(correctAnswerCount);
-
-                    //敵を召喚し、攻撃を行う
-                    enemyController.MonsterSpawnAndAttackAnimation(QuestionManager.Instance.CurrentData.questionDifficulty, token);
-
-                    //----待機処理----//
+                    //--敵のアニメーション時間+1秒待機
                     await UniTask.Delay(TimeSpan.FromSeconds(enemyController.CurrentMonsterData.enemySpawn.spawnEffectTime + 1f), cancellationToken: token);
 
-                    //問題を表示する
-                    questionTextGUI.SetQuesitionText(MAX_ANSWER_TIME, QuestionManager.Instance.CurrentData);
-
-                    countDownAnimation.SetTrigger("play");
-                    //プレイヤーの回答時間の動き
-                    float elapsedTime = 0f;
-                    while (elapsedTime < MAX_ANSWER_TIME && !playerAnswer)
+                    questionTextGUI.SetQuesitionText(MAX_ANSWER_TIME, QuestionManager.Instance.CurrentData);//問題を表示する
+                    countDownAnimation.SetTrigger("play");//カウントダウンアニメを始める
+                    float elapsedTime = 0f;//経過時間を0にリセット
+                    while (elapsedTime < MAX_ANSWER_TIME && !playerAnswer) //制限時間内に正解するまでWhile
                     {
                         await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
                         elapsedTime += 0.1f;
@@ -212,13 +183,14 @@ namespace KanjiYomi
                     //正解不正解で分岐
                     if (playerAnswer)
                     {
-                        Debug.Log($"正解:{QuestionManager.Instance.CurrentData.Correct}");
+                        Debug.Log($"正解:{QuestionManager.Instance.CurrentData.Correct[0]}");
                         KanjiYomi.AuidoManager.Instance.PlaySound_SE(correctSE);//正解音
                         SetGameState(Judge.Correct);//判定の変更
                         correctAnswerCount++;//正解数を1カウント追加
                         enemyController.MonsterDie(token);//敵倒れる
                         countDownAnimation.SetTrigger("stop");//カウントダウンアニメーションを止める
-                        //----待機処理----//
+
+                        //--3秒待機
                         await UniTask.Delay(TimeSpan.FromSeconds(3f), cancellationToken: token);
                     }
                     else
@@ -228,25 +200,29 @@ namespace KanjiYomi
                         enemyController.MonsterEscape();//敵逃げる
                         countDownAnimation.SetTrigger("stop");//カウントダウンアニメーションを止める
 
-                        //----待機処理----//
+                        
+                        //--MissAnimationgaが終了するまで待機
                         bool result = await PlayerController.Instance.answerMissAnimation.MissAnimation(token);
+
+                        //--resultがtrueになるまで
                         await UniTask.WaitUntil(() => result);
-                        //----待機処理----//
+
+                        //--スペースキーを押すまで待機
                         await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space), cancellationToken: token);// キーボードのスペースが押されるまで
                         if (PlayerController.Instance.PlayerLife > 0) PlayerController.Instance.DecreasePlayerLife();//プレイヤーのライフを削る
 
                     }
-                    //----待機処理----//
+
+                    //--1秒待機
                     await UniTask.Delay(TimeSpan.FromSeconds(1f), cancellationToken: token);
+
                 }
-                if (CorrectAnswerCount == 10)
+                if (CorrectAnswerCount == 10)//ゲームクリア
                 {
-                    //ゲームクリア
                     GameManager.Instance.UpdateGameState(GameState.GameClear);
                 }
-                else
+                else//ゲームオーバー
                 {
-                    //ゲームオーバー
                     GameManager.Instance.UpdateGameState(GameState.GameOver);
                 }
 
@@ -261,11 +237,22 @@ namespace KanjiYomi
             }
         }
 
-        void ClearGame()
+        /// <summary>
+        /// 各レベルの最初に行うメソッド
+        /// </summary>
+        async 　UniTask<bool> ChangeDependingOnFlags(int timelineNum,CancellationToken token)
         {
-            Debug.Log("クリア");
+                levelTextGUI.OnDisplayLevelText(correctAnswerCount);//各レベルのテキストアニメーション
+
+                //--テキストアニメーションの時間+0.5f秒待機
+                await UniTask.Delay(TimeSpan.FromSeconds(levelTextGUI.duration + 0.5f), cancellationToken: token);
+
+                PlayerController.Instance.PlayCameraMove(PlayerController.Instance.timelineAssets[timelineNum]);//各レベルのカメラアニメーション
+
+                //--カメラアニメーションが終わるまで待機
+                await UniTask.WaitUntil(() => PlayerController.Instance.DirectorStop, cancellationToken: token);
+
+                return true;//trueを返す
         }
-
-
     }
 }

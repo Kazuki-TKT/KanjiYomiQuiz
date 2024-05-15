@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using System;
 using System.Threading;
 using UnityEngine;
 using Cinemachine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using UnityEngine.UI;
 
 namespace KanjiYomi
 {
@@ -21,6 +18,7 @@ namespace KanjiYomi
         // デリゲートのイベント
         public event MissAnimationCompleteHandler OnMissAnimationComplete;
 
+        //アニメーション時間
         public float animationTime;
 
         //揺れ
@@ -42,42 +40,49 @@ namespace KanjiYomi
             impulseSource.m_ImpulseDefinition.m_TimeEnvelope.m_SustainTime = animationTime;
         }
 
+        //ミスアニメーションを行うメソッド
         public void PlayMissAnimation(CancellationToken token)
         {
             MissAnimation(token).Forget();
         }
-        
-        public void StopMissAnimation()
-        {
-            //cts?.Cancel();
-        }
+
         private void NotifyMissAnimationComplete()
         {
             // イベントが登録されているかを確認してから通知
             OnMissAnimationComplete?.Invoke();
         }
+
+        //ミスアニメーションのメソッド
         public async UniTask<bool>  MissAnimation(CancellationToken token)
         {
             bool end;
-            AuidoManager.Instance.PlaySound_SE(damageClip);
-            AuidoManager.Instance.PlaySound_SE(steamClip);
 
-            foreach (ParticleSystem particleSystem in smokeParticle)
+            AuidoManager.Instance.PlaySound_SE(damageClip);//ダメージ音
+            AuidoManager.Instance.PlaySound_SE(steamClip);//スチーム音
+
+            foreach (ParticleSystem particleSystem in smokeParticle)//スチームエフェクトの再生
             {
                 particleSystem.Play();
             }
-            impulseSource.GenerateImpulse();
-            damageCanvasGroup.DOFade(1, animationTime).SetEase(Ease.Flash,5);
+            impulseSource.GenerateImpulse();//画面を揺らす
+            _ = damageCanvasGroup.DOFade(1, animationTime).SetEase(Ease.Flash,5);//画面を赤く点滅
+
+            //--アニメーション時間待機
             await UniTask.Delay(TimeSpan.FromSeconds(animationTime),cancellationToken:token);
-            damageCanvasGroup.DOFade(0, 0.2f);
-            foreach (ParticleSystem particleSystem in smokeParticle)
+            _ = damageCanvasGroup.DOFade(0, 0.2f);
+
+            foreach (ParticleSystem particleSystem in smokeParticle)//スチームエフェクトの終了
             {
                 particleSystem.Stop();
             }
-            NotifyMissAnimationComplete();
+
+            NotifyMissAnimationComplete();//終了を通知
+
+            //--0.5秒待機
             await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: token);
+
             end = true;
-            return end;
+            return end;//アニメーション終了を返す
         }
         
     }

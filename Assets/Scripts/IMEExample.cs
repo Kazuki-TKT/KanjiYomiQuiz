@@ -4,8 +4,13 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// IME入力を管理するクラス
+    /// 参考URL（https://nekojara.city/unity-input-system-text）
+    /// </summary>
     public class IMEExample : MonoBehaviour
     {
+        //インプット音
         public AudioSource inputSource;
         private void OnEnable()
         {
@@ -31,15 +36,13 @@ namespace KanjiYomi
         // 入力された文字を文字コード（16進数）と共に表示
         private void OnTextInput(char ch)
         {
-            // print($"OnTextInput: {ch}({(int)ch:X02})");
-            inputSource.Play();
+            if(GameManager.Instance.currentGameState==GameState.Playing)inputSource.Play();
         }
 
         // IMEの入力中の文字列を受け取る
         private void OnIMECompositionChange(IMECompositionString str)
         {
-            // print($"OnIMECompositionChange: {str}");
-            inputSource.Play();
+            if (GameManager.Instance.currentGameState == GameState.Playing) inputSource.Play();
         }
     }
 }

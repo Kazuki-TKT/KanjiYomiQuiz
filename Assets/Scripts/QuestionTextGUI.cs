@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// 問題文を表示させるクラス
+    /// </summary>
     public class QuestionTextGUI : MonoBehaviour
     {
         [SerializeField]
@@ -21,7 +24,7 @@ namespace KanjiYomi
 
         //問題のテキストを表示させるTMP
         [SerializeField]
-        TextMeshProUGUI kanjiText, kanjiTextAdjective, adjectiveText;
+        TextMeshProUGUI kanjiText, kanjiTextAdjective, adjectiveText,furiganaText,furiganaAdjectiveText;
 
         //スケールの値を設定
         [SerializeField]
@@ -32,6 +35,7 @@ namespace KanjiYomi
         //パーティクル(Hit)
         [SerializeField]
         ParticleSystem hitParticle;
+
         private void Awake()
         {
             // QuestionGameControllerのイベントを購読
@@ -40,7 +44,6 @@ namespace KanjiYomi
         }
         void Start()
         {
-            //defaultTransform = gameObject.transform;
             canvasGroup = gameObject.GetComponent<CanvasGroup>();
             questionTextObject.SetActive(false);
             questionTextAdjectiveObject.SetActive(false);
@@ -86,6 +89,7 @@ namespace KanjiYomi
                 scaleUpTween.Kill(); // Tweenをキャンセル
             }
         }
+
         /// <summary>
         /// 問題文をリセットするメソッド
         /// </summary>
@@ -95,7 +99,7 @@ namespace KanjiYomi
             gameObject.transform.localScale = defaltScale;
             questionTextObject.SetActive(false);
             questionTextAdjectiveObject.SetActive(false);
-            kanjiText.text = kanjiTextAdjective.text = adjectiveText.text = "";
+            kanjiText.text = kanjiTextAdjective.text = adjectiveText.text = furiganaAdjectiveText.text= furiganaText.text="";
         }
 
         void SetQuestionDataText(QuestionData questionData)
@@ -107,12 +111,20 @@ namespace KanjiYomi
                 questionTextAdjectiveObject.SetActive(true);
                 kanjiTextAdjective.text = questionData.Question;
                 adjectiveText.text = questionData.AdjectiveString;
+                for (int i = 0; i < questionData.Correct[0].Length; i++)
+                {
+                    furiganaAdjectiveText.text += "●";
+                }
             }
             else
             {
                 //問題のGUIにデータをセット
                 questionTextObject.SetActive(true);
                 kanjiText.text = questionData.Question;
+                for (int i = 0; i < questionData.Correct[0].Length; i++)
+                {
+                    furiganaText.text += "●";
+                }
             }
         }
     }

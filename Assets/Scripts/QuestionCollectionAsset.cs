@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace KanjiYomi
 {
+    /// <summary>
+    /// 問題制作用のスクリタブルオブジェクト
+    /// </summary>
     [CreateAssetMenu(fileName = "QuestionCollectioData", menuName = "QuestionCollectionAsset")]
     public class QuestionCollectionAsset : ScriptableObject
     {
@@ -50,8 +53,8 @@ namespace KanjiYomi
         /// 問題の正解
         /// </summary>
         [SerializeField]
-        string correct;
-        public string Correct { get => correct; }
+        string[] correct;
+        public string[] Correct { get => correct; }
 
         /// <summary>
         /// 形容詞かどうかの判定
