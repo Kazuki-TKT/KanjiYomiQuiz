@@ -31,7 +31,7 @@ namespace KanjiYomi
         {
             questionGameController.OnJudgeStateChanged += HandleJudgeStateChanged;// QuestionGameControllerのイベントを購読
             GameManager.OnGameStateChanged += HandleGameStateChanged;// QuestionGameControllerのイベントを購読
-            playerMissAnswerAnimation.OnMissAnimationComplete+=()=> missPanelObjects.SetActive(true);// PlayerMissAnswerAnimationのイベントを購読
+            playerMissAnswerAnimation.OnMissAnimationComplete += HandleMissAnimationComplete;// PlayerMissAnswerAnimationのイベントを購読
 
         }
 
@@ -40,9 +40,14 @@ namespace KanjiYomi
             //解除
             questionGameController.OnJudgeStateChanged -= HandleJudgeStateChanged;
             GameManager.OnGameStateChanged -= HandleGameStateChanged;
-            playerMissAnswerAnimation.OnMissAnimationComplete -= () => missPanelObjects.SetActive(true);
+            playerMissAnswerAnimation.OnMissAnimationComplete -= HandleMissAnimationComplete;
         }
 
+
+        private void HandleMissAnimationComplete()
+        {
+            missPanelObjects.SetActive(true);
+        }
         //ゲームステートによって分岐するメソッド
         private void HandleGameStateChanged(GameState state)
         {
@@ -78,6 +83,7 @@ namespace KanjiYomi
         //指定秒待ってからオブジェクトと音を鳴らすコルーチン
         IEnumerator WaitDisplayPanel(GameObject gameObject,float duration, QuestionGameController.Judge newJudge)
         {
+            Debug.Log($"WaitDisplayPanel started for {newJudge}, waiting for {duration} seconds.");
             yield return new WaitForSeconds(duration);
             gameObject.SetActive(true);
             // newJudgeの値に応じて処理を分岐

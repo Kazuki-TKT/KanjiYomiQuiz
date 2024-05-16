@@ -55,7 +55,7 @@ namespace KanjiYomi
         //ミスアニメーションのメソッド
         public async UniTask<bool>  MissAnimation(CancellationToken token)
         {
-            bool end;
+            bool end=false;
 
             AuidoManager.Instance.PlaySound_SE(damageClip);//ダメージ音
             AuidoManager.Instance.PlaySound_SE(steamClip);//スチーム音
@@ -69,6 +69,7 @@ namespace KanjiYomi
 
             //--アニメーション時間待機
             await UniTask.Delay(TimeSpan.FromSeconds(animationTime),cancellationToken:token);
+
             _ = damageCanvasGroup.DOFade(0, 0.2f);
 
             foreach (ParticleSystem particleSystem in smokeParticle)//スチームエフェクトの終了

@@ -3,7 +3,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using Unity.VisualScripting.Antlr3.Runtime;
-
+using TMPro;
 namespace KanjiYomi
 {
     /// <summary>
@@ -63,6 +63,7 @@ namespace KanjiYomi
         //キャンセルトークン
         CancellationTokenSource cts;
 
+        public TextMeshProUGUI count;
         private void OnEnable()
         {
             StartGame();
@@ -123,6 +124,8 @@ namespace KanjiYomi
                     //初期化
                     playerAnswer = false;
                     SetGameState(Judge.Initial);//判定のステートを初期に
+                    float elapsedTime = 0f;//経過時間を0にリセット
+                    int countTime = 0;
 
                     //正解数により処理を行う
                     switch (correctAnswerCount)
@@ -171,35 +174,36 @@ namespace KanjiYomi
                     await UniTask.Delay(TimeSpan.FromSeconds(enemyController.CurrentMonsterData.enemySpawn.spawnEffectTime + 1f), cancellationToken: token);
 
                     questionTextGUI.SetQuesitionText(MAX_ANSWER_TIME, QuestionManager.Instance.CurrentData);//問題を表示する
-                    countDownAnimation.SetTrigger("play");//カウントダウンアニメを始める
-                    float elapsedTime = 0f;//経過時間を0にリセット
+
                     while (elapsedTime < MAX_ANSWER_TIME && !playerAnswer) //制限時間内に正解するまでWhile
                     {
-                        await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
-                        elapsedTime += 0.1f;
                         if (playerAnswer) break;
-                    }
+                        if (countTime == 8) countDownAnimation.SetBool("play", true);//カウントダウンアニメを始める
 
+                        await UniTask.Delay(TimeSpan.FromSeconds(1f), cancellationToken: token);
+                        elapsedTime += 1f;
+                        countTime++;
+                        count.text = countTime.ToString();
+                    }
+                    countDownAnimation.SetBool("play", false);//カウントダウンアニメーションを止める
                     //正解不正解で分岐
                     if (playerAnswer)
                     {
-                        Debug.Log($"正解:{QuestionManager.Instance.CurrentData.Correct[0]}");
-                        KanjiYomi.AuidoManager.Instance.PlaySound_SE(correctSE);//正解音
+                        //Debug.Log($"正解:{QuestionManager.Instance.CurrentData.Correct[0]}");
+                        AuidoManager.Instance.PlaySound_SE(correctSE);//正解音
                         SetGameState(Judge.Correct);//判定の変更
                         correctAnswerCount++;//正解数を1カウント追加
                         enemyController.MonsterDie(token);//敵倒れる
-                        countDownAnimation.SetTrigger("stop");//カウントダウンアニメーションを止める
-
+                        
                         //--3秒待機
                         await UniTask.Delay(TimeSpan.FromSeconds(3f), cancellationToken: token);
                     }
                     else
                     {
-                        Debug.Log($"不正解:{QuestionManager.Instance.CurrentData.Correct}");
+                        //Debug.Log($"不正解:{QuestionManager.Instance.CurrentData.Correct}");
                         SetGameState(Judge.Miss);//判定の変更
                         enemyController.MonsterEscape();//敵逃げる
-                        countDownAnimation.SetTrigger("stop");//カウントダウンアニメーションを止める
-
+                        
                         
                         //--MissAnimationgaが終了するまで待機
                         bool result = await PlayerController.Instance.answerMissAnimation.MissAnimation(token);

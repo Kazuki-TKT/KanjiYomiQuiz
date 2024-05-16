@@ -36,6 +36,7 @@ namespace KanjiYomi
 
         void Start()
         {
+            //Application.targetFrameRate = 60;
             UpdateGameState(GameState.Title);//ゲーム開始時のステートはTitle
         }
 
